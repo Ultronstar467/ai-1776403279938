@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Demo</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --text-color: #343a40;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --border-radius: 0.375rem;
+            --box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: calc(100% - 20px);
+            padding: 0.75rem 10px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus {
+            border-color: var(--primary-color);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            flex-grow: 1;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+
+        button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        button.secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .message {
+            margin-top: 1.5rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            text-align: left;
+            word-break: break-all;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: var(--success-color);
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: var(--error-color);
+            border: 1px solid #f5c6cb;
+        }
+
+        .switch-mode {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .switch-mode a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .switch-mode a:hover {
+            text-decoration: underline;
+        }
+
+        .protected-content {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .protected-content h2 {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .protected-content p {
+            margin-bottom: 0.5rem;
+        }
+
+        .protected-content pre {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 id="form-title">Login</h1>
+        <form id="authForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group" id="email-group" style="display: none;">
+                <label for="email">Email (Optional)</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="button-group">
+                <button type="submit" class="primary" id="submit-button">Login</button>
+            </div>
+        </form>
+        <div class="switch-mode">
+            <span id="mode-text">Don't have an account?</span>
+            <a href="#" id="toggle-mode">Register</a>
+        </div>
+        <div id="message" class="message" style="display: none;"></div>
+
+        <div class="protected-content" id="protected-area" style="display: none;">
+            <h2>Protected Content</h2>
+            <p>Welcome, <span id="current-username"></span>!</p>
+            <p>Your user data:</p>
+            <pre id="user-data"></pre>
+            <button class="secondary" id="logout-button">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000'; // Make sure this matches your FastAPI server address
+        const authForm = document.getElementById('authForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const emailInput = document.getElementById('email');
+        const emailGroup = document.getElementById('email-group');
+        const submitButton = document.getElementById('submit-button');
+        const toggleModeLink = document.getElementById('toggle-mode');
+        const formTitle = document.getElementById('form-title');
+        const modeText = document.getElementById('mode-text');
+        const messageDiv = document.getElementById('message');
+        const protectedArea = document.getElementById('protected-area');
+        const currentUsernameSpan = document.getElementById('current-username');
+        const userDataPre = document.getElementById('user-data');
+        const logoutButton = document.getElementById('logout-button');
+
+        let isRegisterMode = false;
+
+        function showMessage(type, text) {
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+        }
+
+        function clearMessage() {
+            messageDiv.style.display = 'none';
+            messageDiv.textContent = '';
+            messageDiv.className = 'message';
+        }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            if (isRegisterMode) {
+                formTitle.textContent = 'Register';
+                submitButton.textContent = 'Register';
+                modeText.textContent = 'Already have an account?';
+                toggleModeLink.textContent = 'Login';
+                emailGroup.style.display = 'block';
+            } else {
+                formTitle.textContent = 'Login';
+                submitButton.textContent = 'Login';
+                modeText.textContent = 'Don\'t have an account?';
+                toggleModeLink.textContent = 'Register';
+                emailGroup.style.display = 'none';
+            }
+            clearMessage();
+        }
+
+        async function handleAuth(event) {
+            event.preventDefault();
+            clearMessage();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const email = emailInput.value.trim();
+
+            if (!username || !password) {
+                showMessage('error', 'Please enter both username and password.');
+                return;
+            }
+
+            let endpoint = isRegisterMode ? '/register' : '/token';
+            let body;
+            let headers = {
+                'Accept': 'application/json',
+            };
+
+            if (isRegisterMode) {
+                body = JSON.stringify({
+                    username: username,
+                    password: password,
+                    email: email || undefined
+                });
+                headers['Content-Type'] = 'application/json';
+            } else {
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+                body = formData;
+                headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: body
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('access_token', data.access_token);
+                    showMessage('success', `${isRegisterMode ? 'Registration' : 'Login'} successful! Fetching user data...`);
+                    displayProtectedContent();
+                } else {
+                    showMessage('error', data.detail || `An error occurred during ${isRegisterMode ? 'registration' : 'login'}.`);
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                showMessage('error', 'Network error or server unavailable.');
+            }
+        }
+
+        async function displayProtectedContent() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                protectedArea.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/me`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    currentUsernameSpan.textContent = userData.username;
+                    userDataPre.textContent = JSON.stringify(userData, null, 2);
+                    authForm.style.display = 'none';
+                    document.querySelector('.switch-mode').style.display = 'none';
+                    protectedArea.style.display = 'block';
+                    clearMessage();
+                } else {
+                    localStorage.removeItem('access_token');
+                    showMessage('error', 'Failed to fetch user data. Please log in again.');
+                    authForm.style.display = 'block';
+                    document.querySelector('.switch-mode').style.display = 'block';
+                    protectedArea.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching protected data:', error);
+                localStorage.removeItem('access_token');
+                showMessage('error', 'Network error or unable to connect to server for user data.');
+                authForm.style.display = 'block';
+                document.querySelector('.switch-mode').style.display = 'block';
+                protectedArea.style.display = 'none';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('access_token');
+            protectedArea.style.display = 'none';
+            authForm.style.display = 'block';
+            document.querySelector('.switch-mode').style.display = 'block';
+            usernameInput.value = '';
+            passwordInput.value = '';
+            emailInput.value = '';
+            clearMessage();
+            if (isRegisterMode) {
+                toggleAuthMode(); // Switch back to login mode on logout
+            }
+            showMessage('success', 'You have been logged out.');
+        }
+
+        // Event Listeners
+        authForm.addEventListener('submit', handleAuth);
+        toggleModeLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleAuthMode();
+        });
+        logoutButton.addEventListener('click', handleLogout);
+
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', displayProtectedContent);
+    </script>
+</body>
+</html>
